@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>UNIKA GOLF ENGINE — IA Golf Coach</title>
+<meta name="description" content="Coach IA golf : profil biomécanique, trajectoires, contact, GPS Caddie intelligent, boutique, dating, rapport et premium.">
+
+<style>
+  :root{
+    --bg-1:#050b14;
+    --bg-2:#061b2c;
+    --panel:#f6fbff;
+    --text:#eaf6ff;
+    --ink:#06253a;
+    --ia:#4db6ff;
+    --ia2:#8b5cff;
+    --muted:#6b7280;
+    --radius:16px;
+    --shadow: 0 16px 40px rgba(0,0,0,0.55);
+    --line: rgba(255,255,255,0.10);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:Inter,system-ui,Segoe UI,Arial;
+    color:var(--text);
+    min-height:100vh;
+    background:
+      radial-gradient(900px 520px at 20% 0%, rgba(77,182,255,0.20), transparent 60%),
+      radial-gradient(850px 500px at 80% 10%, rgba(139,92,255,0.18), transparent 60%),
+      linear-gradient(180deg,var(--bg-1),var(--bg-2));
+  }
+  header{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:14px 16px;
+    border-bottom:1px solid var(--line);
+    background: linear-gradient(90deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+    backdrop-filter: blur(10px);
+  }
+  .brand{display:flex;flex-direction:column;gap:4px}
+  .brandTitle{
+    font-size:22px;font-weight:950;letter-spacing:2px;line-height:1;
+    text-shadow: 0 0 22px rgba(77,182,255,0.30);
+  }
+  .brandSub{font-size:12px;color:#bfe6ff;opacity:.9}
+
+  nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+  nav button{
+    background:transparent;
+    border:1px solid rgba(255,255,255,0.14);
+    color:var(--text);
+    padding:8px 12px;
+    border-radius:14px;
+    cursor:pointer;
+    font-weight:850;
+    transition: transform .08s ease, background .15s ease, box-shadow .15s ease;
+    white-space:nowrap;
+  }
+  nav button:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(0,0,0,0.25)}
+  nav button.active{
+    border-color:transparent;
+    background: linear-gradient(90deg, var(--ia), var(--ia2));
+    color:#04121f;
+    box-shadow: 0 12px 26px rgba(77,182,255,0.22);
+  }
+
+  .container{max-width:1200px;margin:18px auto;padding:16px}
+  .page{
+    display:none;
+    background: rgba(246,251,255,1);
+    color:var(--ink);
+    border-radius:var(--radius);
+    padding:18px;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(8,42,68,0.08);
+  }
+  .page.active{display:block}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+
+  .card{
+    background:white;
+    padding:14px;
+    border-radius:16px;
+    color:var(--ink);
+    box-shadow: 0 10px 22px rgba(3,36,57,0.10);
+    border: 1px solid rgba(8,42,68,0.08);
+  }
+  h2,h3{margin:0 0 10px}
+  .small{font-size:13px;color:var(--muted)}
+  label{font-weight:900;display:block;margin-top:10px}
+  input,select,textarea{
+    width:100%;
+    padding:10px;
+    border-radius:12px;
+    border:1px solid #dfeffd;
+    margin-top:6px;
+    font-size:14px;
+    outline:none;
+  }
+  input:focus,select:focus,textarea:focus{
+    border-color: rgba(77,182,255,0.55);
+    box-shadow:0 0 0 4px rgba(77,182,255,0.16);
+  }
+
+  .btn{
+    background: linear-gradient(90deg, var(--ia), var(--ia2));
+    color:#04121f;
+    padding:10px 14px;
+    border-radius:14px;
+    border:none;
+    font-weight:950;
+    cursor:pointer;
+    box-shadow: 0 14px 28px rgba(77,182,255,0.16);
+  }
+  .btn.ghost{
+    background:transparent;
+    border:2px solid rgba(77,182,255,0.85);
+    color:#0a4a7a;
+    box-shadow:none;
+  }
+  .btn.danger{
+    background: #ff4d6d;
+    color:#1a0b10;
+  }
+
+  .pill{
+    display:inline-block;
+    padding:6px 10px;
+    border-radius:999px;
+    background:#eef7ff;
+    color:#0a3b5c;
+    font-weight:900;
+    font-size:12px;
+    border:1px solid #d7ecff;
+    margin-right:6px;
+    margin-top:6px;
+  }
+
+  .exercise{
+    display:flex;gap:12px;
+    background: linear-gradient(180deg, #f4fbff, #f1f8ff);
+    padding:12px;
+    border-radius:16px;
+    margin-top:10px;
+    border:1px solid #d7ecff;
+  }
+  .exercise img{
+    width:140px;height:92px;object-fit:cover;border-radius:14px;
+    border:1px solid rgba(8,42,68,0.10);
+    background:#eaf6ff;
+  }
+  .neo-divider{
+    height:1px;
+    background: linear-gradient(90deg, transparent, rgba(77,182,255,0.65), rgba(139,92,255,0.55), transparent);
+    margin:12px 0;
+  }
+  .scoreBox{
+    border-radius:16px;
+    padding:12px;
+    border:1px solid #d7ecff;
+    background: linear-gradient(180deg,#f4fbff,#ffffff);
+  }
+  .scoreNum{
+    font-weight:1000;
+    font-size:34px;
+    line-height:1;
+    color:#0a4a7a;
+  }
+
+  footer{margin-top:18px;text-align:center;color:#bcd6ff;padding:18px}
+
+  /* Modal */
+  #modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;z-index:999}
+  #modalBox{background:white;padding:14px;border-radius:16px;max-width:900px;margin:32px auto;color:#012033;box-shadow:0 16px 40px rgba(0,0,0,0.35)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brandTitle">UNIKA GOLF ENGINE</div>
+    <div class="brandSub">IA Golf Coach • Profil • Vidéo • GPS Caddie • Boutique • Dating • Rapport</div>
+  </div>
+
+  <nav id="mainNav">
+    <button class="active" data-target="home">Accueil</button>
+    <button data-target="profile">Profil</button>
+    <button data-target="swinglab">IA Swing Lab</button>
+    <button data-target="video">Analyse Vidéo</button>
+    <button data-target="gps">GPS Caddie</button>
+    <button data-target="shop">Boutique</button>
+    <button data-target="dating">Golf Dating</button>
+    <button data-target="results">Rapport</button>
+    <button data-target="premium">Premium</button>
+  </nav>
+</header>
+
+<main class="container">
+
+  <!-- HOME -->
+  <section id="home" class="page active">
+    <div class="grid">
+      <div class="card">
+        <h2>Ton coach IA de golf (version pro & futuriste)</h2>
+        <p class="small">
+          Remplis ton profil → génère un rapport gratuit rapide.
+          Premium débloque les packs complets (trajectoire/contact/stratégie) + fiches détaillées.
+        </p>
+        <div class="neo-divider"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn" data-target="profile" type="button">Commencer</button>
+          <button class="btn ghost" data-target="results" type="button">Voir le rapport</button>
+          <button class="btn ghost" data-target="gps" type="button">GPS Caddie</button>
+          <button class="btn ghost" data-target="dating" type="button">Golf Dating</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Ce que l’IA analyse</h3>
+        <div class="small">
+          ✅ Trajectoire (slice/hook forts, fade/draw, push/pull)<br>
+          ✅ Contact (gratté/topé/talon/pointe/centré)<br>
+          ✅ Miss (court/long/gauche/droite/aléatoire)<br>
+          ✅ Grip (neutre/faible/fort) + vitesse mph + shaft<br>
+          ✅ GPS Caddie : club conseillé selon tes tendances
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Objectif : simple & efficace</h3>
+        <div class="small">
+          La version gratuite donne des exercices ultra simples. Premium : un vrai programme.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROFILE -->
+  <section id="profile" class="page">
+    <h2>Profil joueur</h2>
+    <p class="small">Plus c’est précis, plus l’IA devient pertinente.</p>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Identité & biomécanique</h3>
+
+        <label>Prénom</label>
+        <input id="firstName" placeholder="Prénom">
+
+        <label>Nom</label>
+        <input id="lastName" placeholder="Nom">
+
+        <label>Âge</label>
+        <input id="age" type="number" placeholder="Ex: 34" min="5" max="99">
+
+        <label>Taille (cm)</label>
+        <input id="height" type="number" placeholder="Ex: 170" min="80" max="230">
+
+        <label>Poids (kg)</label>
+        <input id="weight" type="number" placeholder="Ex: 65" min="20" max="200">
+
+        <label>Blessures / Limitations</label>
+        <input id="injuries" placeholder="Ex : dos, genou, épaule...">
+      </div>
+
+      <div class="card">
+        <h3>Golf (tendances)</h3>
+
+        <label>Niveau</label>
+        <select id="level">
+          <option value="beginner">Débutant</option>
+          <option value="intermediate" selected>Intermédiaire</option>
+          <option value="advanced">Avancé</option>
+          <option value="pro">Pro</option>
+        </select>
+
+        <label>Trajectoire principale</label>
+        <select id="ballflight">
+          <option value="straight">Droite</option>
+          <option value="slice_strong">Slice (gauche → droite très fort)</option>
+          <option value="fade">Fade (gauche → droite léger)</option>
+          <option value="push">Push (part à droite)</option>
+          <option value="hook_strong">Hook (droite → gauche très fort)</option>
+          <option value="draw">Draw (droite → gauche léger)</option>
+          <option value="pull">Pull (part à gauche)</option>
+        </select>
+
+        <label>Qualité de contact</label>
+        <select id="contact">
+          <option value="center" selected>Centré</option>
+          <option value="fat">Gratté (fat)</option>
+          <option value="thin">Topé (thin)</option>
+          <option value="toe">Pointe (toe)</option>
+          <option value="heel">Talon (heel)</option>
+        </select>
+
+        <label>Tendance de loupé (miss principal)</label>
+        <select id="missTrend">
+          <option value="none" selected>—</option>
+          <option value="short">Court</option>
+          <option value="long">Long</option>
+          <option value="left">Gauche</option>
+          <option value="right">Droite</option>
+          <option value="random">Aléatoire</option>
+        </select>
+
+        <label>Vitesse estimée (mph)</label>
+        <input id="swing_speed" placeholder="Ex: 85">
+
+        <label>Grip</label>
+        <select id="gripType">
+          <option value="neutral" selected>Neutre</option>
+          <option value="weak">Faible</option>
+          <option value="strong">Fort</option>
+        </select>
+
+        <div style="margin-top:10px">
+          <div class="small"><strong>Aperçu grip</strong></div>
+          <img id="gripImg" src="" alt="Aperçu grip" style="width:100%;height:160px;object-fit:cover;border-radius:14px;border:1px solid rgba(8,42,68,0.12);background:#eef7ff;margin-top:8px">
+          <div id="gripCaption" class="small" style="margin-top:6px"></div>
+        </div>
+
+        <label>Shaft (flex)</label>
+        <select id="shaft">
+          <option>Ladies</option>
+          <option>Senior</option>
+          <option selected>Regular</option>
+          <option>Stiff</option>
+          <option>X-Stiff</option>
+        </select>
+
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <button class="btn" id="btn-run" type="button">Générer mon rapport</button>
+          <button class="btn ghost" id="btn-save" type="button">Sauvegarder</button>
+          <button class="btn ghost" id="btn-reset" type="button">Réinitialiser</button>
+        </div>
+
+        <div id="profileHint" class="small" style="margin-top:10px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SWING LAB -->
+  <section id="swinglab" class="page">
+    <h2>IA Swing Lab</h2>
+    <p class="small">Outils rapides : vitesse mph → conseil immédiat (simulé).</p>
+
+    <div class="grid">
+      <div class="card">
+        <label>Vitesse instantanée (mph)</label>
+        <input id="speed_mph" placeholder="Ex: 90">
+        <button class="btn" id="btn-speed-check" type="button" style="margin-top:10px">Analyser</button>
+        <div id="speedAdvice" style="margin-top:12px"></div>
+      </div>
+
+      <div class="card">
+        <h3>Conseil IA</h3>
+        <div class="small">
+          - Sous 70 mph : amplitude/tempo<br>
+          - 70–95 mph : séquence + transfert<br>
+          - 95+ mph : stabilité + prévention blessures
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VIDEO -->
+  <section id="video" class="page">
+    <h2>Analyse Vidéo (simulation)</h2>
+    <p class="small">Prototype : upload + rapport simulé. (Plus tard : vraie analyse IA serveur.)</p>
+
+    <div class="grid">
+      <div class="card">
+        <label>Vidéo (profil)</label>
+        <input type="file" id="videoInput_profile" accept="video/*">
+        <video id="videoPreview_profile" controls style="width:100%;display:none;margin-top:10px;border-radius:14px"></video>
+      </div>
+
+      <div class="card">
+        <label>Vidéo (face)</label>
+        <input type="file" id="videoInput_face" accept="video/*">
+        <video id="videoPreview_face" controls style="width:100%;display:none;margin-top:10px;border-radius:14px"></video>
+
+        <label>Notes</label>
+        <textarea id="videoNotes" rows="3" placeholder="Ex: slice au driver, contact topé au fer..."></textarea>
+
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+          <button class="btn" id="analyzeVideoBtn" type="button">Analyser (simulé)</button>
+          <button class="btn ghost" id="clearVideosBtn" type="button">Effacer</button>
+        </div>
+
+        <div id="videoReport" style="margin-top:12px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GPS -->
+  <section id="gps" class="page">
+    <h2>GPS Caddie de golf intelligent</h2>
+    <p class="small">
+      Le GPS conseille un club selon distance + tes tendances (court/long) + trajectoire.
+      (Simulation dans cette version.)
+    </p>
+
+    <div class="card">
+      <button class="btn" id="gpsStart" type="button">Activer GPS</button>
+      <div id="gpsStatus" class="small" style="margin-top:8px">Statut : inactif</div>
+      <div id="gpsOutput" style="margin-top:12px"></div>
+    </div>
+  </section>
+
+  <!-- SHOP -->
+  <section id="shop" class="page">
+    <h2>Boutique (recommandations)</h2>
+    <p class="small">Prototype : suggestions automatiques selon ton profil.</p>
+    <div id="shop-list" class="card small">Génère un rapport pour afficher les recommandations.</div>
+  </section>
+
+  <!-- DATING -->
+  <section id="dating" class="page">
+    <h2>Golf Dating</h2>
+    <p class="small">Prototype local : crée un profil et vois la liste (stocké sur ton navigateur).</p>
+
+    <div class="grid">
+      <div class="card">
+        <label>Pseudo</label>
+        <input id="dating_name" placeholder="Pseudo">
+
+        <label>Localisation (ex: Nouméa, 20km)</label>
+        <input id="dating_loc" placeholder="Ville, rayon">
+
+        <label>Style recherché</label>
+        <select id="dating_pref">
+          <option>Amical</option>
+          <option>Parties régulières</option>
+          <option>Compétition</option>
+          <option>Rencontre</option>
+        </select>
+
+        <label>Niveau</label>
+        <select id="dating_lvl">
+          <option>Débutant</option>
+          <option selected>Intermédiaire</option>
+          <option>Avancé</option>
+          <option>Pro</option>
+        </select>
+
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <button class="btn" id="create-dating" type="button">Créer profil</button>
+          <button class="btn danger" id="clear-dating" type="button">Tout effacer</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Profils</h3>
+        <div id="dating-list" class="small">Aucun profil</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results" class="page">
+    <h2>Rapport IA</h2>
+    <div id="result-summary" class="card">Aucun rapport généré</div>
+
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+      <button class="btn ghost" id="download-json" type="button">Télécharger JSON</button>
+      <button class="btn ghost" id="download-txt" type="button">Télécharger TXT</button>
+      <button class="btn" id="btn-export-pdf" type="button">Imprimer / PDF</button>
+    </div>
+  </section>
+
+  <!-- PREMIUM -->
+  <section id="premium" class="page">
+    <h2>Premium</h2>
+    <div class="card">
+      <p class="small">
+        Premium débloque : packs anti-slice/anti-hook, centrage face, contrôle distance, stratégie parcours,
+        fiches détaillées, progression 30 jours (à ajouter ensuite).
+      </p>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <button class="btn" id="subscribe" type="button">S’abonner (simulation)</button>
+        <div id="premium-status" class="small">Non abonné</div>
+      </div>
+      <div class="neo-divider"></div>
+      <div class="small">
+        Astuce business : tu peux connecter Stripe plus tard. Là on simule juste l’état Premium.
+      </div>
+    </div>
+  </section>
+
+  <footer>© 2025 UNIKA GOLF ENGINE</footer>
+</main>
+
+<!-- Modal -->
+<div id="modal">
+  <div id="modalBox">
+    <div id="modal-content"></div>
+    <div style="text-align:right;margin-top:10px">
+      <button class="btn ghost" id="modal-close" type="button">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================
+   NAVIGATION
+   ========================= */
+function openPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const el=document.getElementById(id);
+  if(el) el.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function activateNav(target){
+  document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
+  const navBtn=[...document.querySelectorAll('nav button')].find(x=>x.getAttribute('data-target')===target);
+  if(navBtn) navBtn.classList.add('active');
+}
+document.querySelectorAll('nav button').forEach(b=>{
+  b.addEventListener('click', ()=> {
+    const target=b.getAttribute('data-target');
+    activateNav(target);
+    if(target) openPage(target);
+  });
+});
+document.querySelectorAll('[data-target]').forEach(b=>{
+  b.addEventListener('click', ()=> {
+    const t=b.getAttribute('data-target');
+    if(!t) return;
+    activateNav(t);
+    openPage(t);
+  });
+});
+
+/* =========================
+   UTILS
+   ========================= */
+function escapeHtml(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function isPremium(){ return localStorage.getItem('unik_premium')==='1'; }
+function saveLast(profile, plan){
+  localStorage.setItem('unik_last_profile', JSON.stringify(profile));
+  localStorage.setItem('unik_last_plan', JSON.stringify(plan));
+}
+function showModal(html){
+  document.getElementById('modal-content').innerHTML = html;
+  document.getElementById('modal').style.display = 'flex';
+}
+document.getElementById('modal-close').addEventListener('click', ()=> {
+  document.getElementById('modal').style.display = 'none';
+});
+function imgGolf(keywords){
+  return `https://source.unsplash.com/900x600/?${encodeURIComponent(keywords)}`;
+}
+
+/* =========================
+   GRIP PREVIEW
+   ========================= */
+const gripImg = document.getElementById('gripImg');
+const gripCaption = document.getElementById('gripCaption');
+function setGripPreview(){
+  const v = document.getElementById('gripType').value;
+  if(v === 'neutral'){
+    gripImg.src = imgGolf('golf,grip,neutral');
+    gripCaption.innerHTML = 'Grip <strong>neutre</strong> : équilibre, face plus stable.';
+  } else if(v === 'weak'){
+    gripImg.src = imgGolf('golf,grip,weak');
+    gripCaption.innerHTML = 'Grip <strong>faible</strong> : peut favoriser <em>fade/slice</em>.';
+  } else {
+    gripImg.src = imgGolf('golf,grip,strong');
+    gripCaption.innerHTML = 'Grip <strong>fort</strong> : peut favoriser <em>draw/hook</em>.';
+  }
+}
+document.getElementById('gripType').addEventListener('change', setGripPreview);
+
+/* =========================
+   EXERCISES DB (conversion)
+   - Free: 3-4 max
+   - Premium: packs
+   ========================= */
+const EX = [
+  // FREE (simple)
+  {id:'stick_line', title:'Baguette au sol (alignement)', why:'Stabilise la ligne de départ.', how:'Pose une baguette au sol sur la cible. Pieds/épaules parallèles.', premium:false, img: imgGolf('golf,alignment,sticks')},
+  {id:'lowpoint_line', title:'Ligne au sol (point bas)', why:'Corrige le gratté (fat).', how:'Trace une ligne. Cherche à “divoter” APRÈS la ligne (devant la balle).', premium:false, img: imgGolf('golf,divot,iron')},
+  {id:'posture_simple', title:'Club sur les hanches (posture)', why:'Aide contre le top (thin).', how:'Club sur les hanches, demi-swings en gardant l’inclinaison.', premium:false, img: imgGolf('golf,posture,setup')},
+
+  // PREMIUM packs
+  {id:'anti_slice', title:'Pack anti-slice complet', why:'Face ouverte + chemin extérieur.', how:'Progression 3 étapes : face → chemin → tempo + repères.', premium:true, img: imgGolf('golf,driving,range')},
+  {id:'anti_hook', title:'Pack anti-hook complet', why:'Face fermée + mains actives.', how:'Hold-off + grip + finish contrôlé, progression.', premium:true, img: imgGolf('golf,swing,impact')},
+  {id:'toe_heel', title:'Centrage face (toe/heel)', why:'Pointe/talon = distance au ballon + posture.', how:'Spray face / impact tape : 10 balles objectif centre.', premium:true, img: imgGolf('golf,clubface,impact')},
+  {id:'distance_control', title:'Contrôle distance (court/long)', why:'Stabiliser contact + tempo.', how:'Échelle 50/70/90% avec 3 cibles.', premium:true, img: imgGolf('golf,training,range')},
+  {id:'course_strategy', title:'Stratégie parcours IA', why:'Réduire le score par choix intelligents.', how:'Plan tee-shot + zones + club sûr selon tes tendances.', premium:true, img: imgGolf('golf,course,fairway')},
+  {id:'push_pull', title:'Pack départ (push/pull)', why:'Départ de balle = face à l’impact.', how:'Repères face square + baguette pour départ + 9 balles.', premium:true, img: imgGolf('golf,ball,flight')}
+];
+function findEx(id){ return EX.find(e=>e.id===id); }
+
+/* =========================
+   READ PROFILE
+   ========================= */
+function readProfile(){
+  return {
+    firstName: (document.getElementById('firstName').value || '').trim(),
+    lastName: (document.getElementById('lastName').value || '').trim(),
+    age: Number(document.getElementById('age').value)||null,
+    height: Number(document.getElementById('height').value)||null,
+    weight: Number(document.getElementById('weight').value)||null,
+    injuries: (document.getElementById('injuries').value || '').toLowerCase(),
+    level: document.getElementById('level').value || 'intermediate',
+    ballflight: document.getElementById('ballflight').value || 'straight',
+    contact: document.getElementById('contact').value || 'center',
+    missTrend: document.getElementById('missTrend').value || 'none',
+    swing_speed: Number(document.getElementById('swing_speed').value)||0,
+    gripType: document.getElementById('gripType').value || 'neutral',
+    shaft: document.getElementById('shaft').value || 'Regular'
+  };
+}
+
+/* =========================
+   SCORE IA (simple & motivant)
+   ========================= */
+function computeIAScore(p){
+  let score = 88; // base
+  const risks = [];
+
+  if(p.ballflight !== 'straight') { score -= 8; risks.push('Trajectoire non neutre'); }
+  if(p.ballflight.includes('strong')) { score -= 6; risks.push('Trajectoire forte'); }
+
+  if(p.contact !== 'center'){ score -= 10; risks.push('Contact irrégulier'); }
+  if(p.missTrend !== 'none'){ score -= 6; risks.push('Dispersion'); }
+
+  if(p.swing_speed && p.swing_speed < 70){ score -= 4; risks.push('Vitesse faible'); }
+  if(p.swing_speed && p.swing_speed > 100){ score -= 3; risks.push('Vitesse haute (stabilité)'); }
+
+  if(p.injuries && p.injuries.length >= 2){ score -= 5; risks.push('Douleurs/limitations'); }
+
+  score = Math.max(52, Math.min(97, score));
+  let label = 'Solide';
+  if(score < 65) label = 'À stabiliser';
+  else if(score < 75) label = 'En progression';
+  else if(score < 85) label = 'Bon';
+  else label = 'Très bon';
+
+  return {score, label, risks};
+}
+
+/* =========================
+   PLAN LOGIC (conversion)
+   ========================= */
+function computePlan(p){
+  const plan = [];
+  const reasons = [];
+
+  // Base gratuit
+  plan.push(findEx('stick_line'));
+  reasons.push("Base : alignement simple avec baguette au sol.");
+
+  // Contact
+  if(p.contact === 'fat'){
+    plan.push(findEx('lowpoint_line'));
+    reasons.push("Gratté : point bas trop arrière → exercice ligne au sol.");
+  } else if(p.contact === 'thin'){
+    plan.push(findEx('posture_simple'));
+    reasons.push("Topé : perte de posture → club sur les hanches.");
+  } else if(p.contact === 'toe' || p.contact === 'heel'){
+    reasons.push("Pointe/Talon : centrage face → Premium recommandé.");
+    if(isPremium()) plan.push(findEx('toe_heel'));
+  } else {
+    reasons.push("Contact centré : on stabilise direction & régularité.");
+  }
+
+  // Trajectoire
+  if(p.ballflight === 'slice_strong'){
+    reasons.push("Slice fort : pack anti-slice (Premium).");
+    if(isPremium()) plan.push(findEx('anti_slice'));
+  } else if(p.ballflight === 'hook_strong'){
+    reasons.push("Hook fort : pack anti-hook (Premium).");
+    if(isPremium()) plan.push(findEx('anti_hook'));
+  } else if(p.ballflight === 'fade'){
+    reasons.push("Fade : contrôle face/chemin → Premium pour progression.");
+    if(isPremium()) plan.push(findEx('anti_slice'));
+  } else if(p.ballflight === 'draw'){
+    reasons.push("Draw : contrôle release → Premium pour progression.");
+    if(isPremium()) plan.push(findEx('anti_hook'));
+  } else if(p.ballflight === 'push' || p.ballflight === 'pull'){
+    reasons.push("Push/Pull : la face contrôle le départ → pack départ (Premium).");
+    if(isPremium()) plan.push(findEx('push_pull'));
+  }
+
+  // Miss trend
+  if(p.missTrend === 'short' || p.missTrend === 'long'){
+    reasons.push("Distance irrégulière : plan contrôle distance (Premium).");
+    if(isPremium()) plan.push(findEx('distance_control'));
+  }
+  if(p.missTrend === 'left' || p.missTrend === 'right' || p.missTrend === 'random'){
+    reasons.push("Dispersion : stratégie parcours IA (Premium).");
+    if(isPremium()) plan.push(findEx('course_strategy'));
+  }
+
+  // Grip hint
+  if(p.gripType === 'strong') reasons.push("Grip fort : tendance à fermer la face (hook/draw).");
+  if(p.gripType === 'weak') reasons.push("Grip faible : tendance à ouvrir la face (slice/fade).");
+
+  // Dedupe
+  const uniq = new Set();
+  const final = [];
+  for(const e of plan){
+    if(!e) continue;
+    if(uniq.has(e.id)) continue;
+    uniq.add(e.id);
+    final.push(e);
+  }
+
+  // Limite gratuit
+  if(!isPremium() && final.length > 4) final.length = 4;
+
+  return {exercises: final, reasons};
+}
+
+/* =========================
+   SHOP (simple)
+   ========================= */
+function computeShop(p){
+  const list = [];
+  if(p.ballflight.includes('slice')) list.push({title:'Alignment sticks', price:'≈ 15–25€', img: imgGolf('golf,alignment,sticks')});
+  if(p.contact === 'fat' || p.contact === 'thin') list.push({title:'Tapis practice / ligne', price:'≈ 20–40€', img: imgGolf('golf,practice,mat')});
+  if(p.contact === 'toe' || p.contact === 'heel') list.push({title:'Impact tape / spray face', price:'≈ 10–20€', img: imgGolf('golf,clubface,impact')});
+  if(!list.length) list.push({title:'Pack découverte entraînement', price:'≈ 29–49€', img: imgGolf('golf,training,range')});
+  return list;
+}
+
+/* =========================
+   RENDER REPORT
+   ========================= */
+function openExercise(ex){
+  const locked = ex.premium && !isPremium();
+  const badge = locked ? `<div class="pill" style="background:#fff3cd;border-color:#ffe69c;color:#6b4c00">PREMIUM</div>` : '';
+  const how = locked
+    ? `<div class="small" style="margin-top:10px">Débloque Premium pour accéder à la fiche complète.</div>`
+    : `<div class="small" style="margin-top:10px"><strong>Comment faire :</strong><br>${escapeHtml(ex.how || '—')}</div>`;
+
+  showModal(`
+    <div>
+      ${badge}
+      <h3 style="margin:6px 0">${escapeHtml(ex.title)}</h3>
+      <div class="small">${escapeHtml(ex.why || '')}</div>
+      <img src="${ex.img}" style="width:100%;height:280px;object-fit:cover;border-radius:14px;margin-top:10px;border:1px solid rgba(8,42,68,0.12)">
+      ${how}
+    </div>
+  `);
+}
+
+function renderPlan(profile, planObj){
+  const el = document.getElementById('result-summary');
+  const name = ((profile.firstName||'') + ' ' + (profile.lastName||'')).trim() || 'golfeur';
+
+  const scoreObj = computeIAScore(profile);
+
+  let html = `<div>
+    <h3 style="margin:0 0 8px">Bonjour ${escapeHtml(name)}</h3>
+    <div class="small">
+      Trajectoire: ${escapeHtml(profile.ballflight)} • Contact: ${escapeHtml(profile.contact)} • Miss: ${escapeHtml(profile.missTrend)} • Vitesse: ${escapeHtml(profile.swing_speed)} mph
+    </div>
+
+    <div style="margin-top:10px">
+      <span class="pill">Grip: ${escapeHtml(profile.gripType)}</span>
+      <span class="pill">Shaft: ${escapeHtml(profile.shaft)}</span>
+      <span class="pill">${isPremium() ? 'Premium actif ✅' : 'Version gratuite'}</span>
+    </div>
+
+    <div class="neo-divider"></div>
+
+    <div class="scoreBox">
+      <div class="small"><strong>Score IA</strong> (prototype)</div>
+      <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:6px">
+        <div class="scoreNum">${scoreObj.score}/100</div>
+        <div>
+          <div style="font-weight:950;color:#0a4a7a">${escapeHtml(scoreObj.label)}</div>
+          <div class="small">Risques détectés : ${escapeHtml(scoreObj.risks.join(', ') || 'aucun')}</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  if(planObj.reasons?.length){
+    html += `<div style="margin-top:12px;padding:12px;background:#fff8e6;border-radius:16px;border:1px solid #ffe8b3">
+      <strong>Analyse IA :</strong>
+      <ul style="margin:8px 0 0 18px;padding:0">`;
+    planObj.reasons.forEach(r=> html += `<li class="small">${escapeHtml(r)}</li>`);
+    html += `</ul></div>`;
+  }
+
+  html += `<div style="margin-top:14px"><strong>Exercices</strong> <span class="small">(simple & rapide)</span></div>`;
+
+  planObj.exercises.forEach((ex,i)=>{
+    const locked = ex.premium && !isPremium();
+    const badge = locked ? `<span class="pill" style="background:#fff3cd;border-color:#ffe69c;color:#6b4c00">PREMIUM</span>` : '';
+    html += `
+      <div class="exercise">
+        <img src="${ex.img}" alt="">
+        <div style="flex:1">
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <strong>${i+1}. ${escapeHtml(ex.title)}</strong> ${badge}
+          </div>
+          <div class="small" style="margin-top:6px">${escapeHtml(ex.why)}</div>
+          <div style="margin-top:10px">
+            <button class="btn ${locked ? 'ghost':''}" data-ex="${ex.id}" type="button">
+              ${locked ? 'Débloquer (Premium)' : 'Voir'}
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  // CTA conversion premium
+  if(!isPremium()){
+    html += `
+      <div class="neo-divider"></div>
+      <div class="card" style="border:1px solid #d7ecff;background:#f7fbff">
+        <strong>Débloquer le plan complet</strong>
+        <div class="small" style="margin-top:6px">
+          Packs anti-slice / anti-hook, centrage face, contrôle distance, stratégie parcours + fiches détaillées.
+        </div>
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn" data-target="premium" type="button">Voir Premium</button>
+          <button class="btn ghost" data-target="shop" type="button">Voir Boutique</button>
+        </div>
+      </div>
+    `;
+  }
+
+  html += `</div>`;
+  el.innerHTML = html;
+
+  // listeners “Voir”
+  el.querySelectorAll('button[data-ex]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const ex = findEx(btn.getAttribute('data-ex'));
+      if(!ex) return;
+      if(ex.premium && !isPremium()){
+        activateNav('premium'); openPage('premium');
+        return;
+      }
+      openExercise(ex);
+    });
+  });
+
+  // shop
+  const shopList = document.getElementById('shop-list');
+  const shop = computeShop(profile);
+  shopList.innerHTML = shop.map(s=>`
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
+      <img src="${s.img}" style="width:92px;height:64px;border-radius:12px;object-fit:cover;border:1px solid rgba(8,42,68,0.12)">
+      <div>
+        <strong>${escapeHtml(s.title)}</strong>
+        <div class="small">${escapeHtml(s.price)}</div>
+      </div>
+    </div>
+  `).join('');
+
+  saveLast(profile, planObj);
+
+  activateNav('results');
+  openPage('results');
+}
+
+/* =========================
+   BUTTONS PROFILE
+   ========================= */
+document.getElementById('btn-run').addEventListener('click', ()=>{
+  const p = readProfile();
+  const hint = document.getElementById('profileHint');
+  hint.innerHTML = (!p.firstName && !p.lastName) ? "Tu peux mettre un prénom pour personnaliser le rapport 🙂" : "";
+  const plan = computePlan(p);
+  renderPlan(p, plan);
+});
+document.getElementById('btn-save').addEventListener('click', ()=>{
+  const p = readProfile();
+  localStorage.setItem('unik_last_profile', JSON.stringify(p));
+  alert('Profil sauvegardé ✅');
+});
+document.getElementById('btn-reset').addEventListener('click', ()=>{
+  if(!confirm('Réinitialiser le profil ?')) return;
+  ['firstName','lastName','age','height','weight','injuries','swing_speed'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('level').value='intermediate';
+  document.getElementById('ballflight').value='straight';
+  document.getElementById('contact').value='center';
+  document.getElementById('missTrend').value='none';
+  document.getElementById('gripType').value='neutral';
+  document.getElementById('shaft').value='Regular';
+  setGripPreview();
+  localStorage.removeItem('unik_last_profile');
+  alert('Réinitialisé ✅');
+});
+
+/* =========================
+   SWINGLAB
+   ========================= */
+document.getElementById('btn-speed-check').addEventListener('click', ()=>{
+  const val = Number(document.getElementById('speed_mph').value)||0;
+  const box = document.getElementById('speedAdvice');
+  if(!val){
+    box.innerHTML = '<div class="small" style="color:#b33">Entrez une valeur en mph</div>';
+    return;
+  }
+  let msg='';
+  if(val < 70) msg='Swing lent : amplitude + tempo + gainage léger.';
+  else if(val < 95) msg='Swing intermédiaire : transfert de poids + séquence hanches/torse.';
+  else msg='Swing rapide : priorité stabilité + prévention blessures (core).';
+  box.innerHTML = `<div class="card"><strong>Analyse vitesse (${val} mph)</strong><div class="small" style="margin-top:8px">${escapeHtml(msg)}</div></div>`;
+});
+
+/* =========================
+   VIDEO ANALYSIS (SIMULATED)
+   ========================= */
+const vi_profile = document.getElementById('videoInput_profile');
+const vp_profile = document.getElementById('videoPreview_profile');
+const vi_face = document.getElementById('videoInput_face');
+const vp_face = document.getElementById('videoPreview_face');
+
+vi_profile.addEventListener('change', e=> {
+  const f=e.target.files[0];
+  if(!f) return;
+  vp_profile.src = URL.createObjectURL(f);
+  vp_profile.style.display='block';
+});
+vi_face.addEventListener('change', e=> {
+  const f=e.target.files[0];
+  if(!f) return;
+  vp_face.src = URL.createObjectURL(f);
+  vp_face.style.display='block';
+});
+
+document.getElementById('analyzeVideoBtn').addEventListener('click', ()=>{
+  if(!vp_profile.src && !vp_face.src) return alert('Upload au moins une vidéo.');
+  const notes = document.getElementById('videoNotes').value || '';
+  const last = JSON.parse(localStorage.getItem('unik_last_profile') || 'null');
+  const p = last || readProfile();
+
+  document.getElementById('videoReport').innerHTML = '<div class="card">Analyse IA en cours... (simulation)</div>';
+  setTimeout(()=>{
+    const traj = p.ballflight || 'straight';
+    const contact = p.contact || 'center';
+
+    let rec1 = 'Stabiliser posture et finish.';
+    if(traj.includes('slice')) rec1 = 'Vérifier face ouverte + chemin extérieur (anti-slice).';
+    if(traj.includes('hook')) rec1 = 'Vérifier face fermée + release (anti-hook).';
+
+    let rec2 = 'Contact OK.';
+    if(contact === 'fat') rec2 = 'Travail du point bas (ligne au sol).';
+    if(contact === 'thin') rec2 = 'Stabilité posture (club sur les hanches).';
+    if(contact === 'toe' || contact === 'heel') rec2 = 'Centrage face (impact tape) — Premium conseillé.';
+
+    const html = `
+      <div class="card">
+        <strong>Rapport vidéo IA (simulé)</strong>
+        <div class="small" style="margin-top:8px">
+          Notes: ${escapeHtml(notes)}<br><br>
+          Détections (simulées) : rotation thoracique moyenne, tempo irrégulier, dispersion modérée.<br>
+          <strong>Conseil 1 :</strong> ${escapeHtml(rec1)}<br>
+          <strong>Conseil 2 :</strong> ${escapeHtml(rec2)}<br><br>
+          ${!isPremium() ? '<em>Premium débloque les packs complets + fiches.</em>' : '<em>Premium actif : tu peux générer un plan complet dans Rapport.</em>'}
+        </div>
+      </div>
+    `;
+    document.getElementById('videoReport').innerHTML = html;
+  }, 900);
+});
+
+document.getElementById('clearVideosBtn').addEventListener('click', ()=>{
+  vi_profile.value=''; vp_profile.src=''; vp_profile.style.display='none';
+  vi_face.value=''; vp_face.src=''; vp_face.style.display='none';
+  document.getElementById('videoNotes').value='';
+  document.getElementById('videoReport').innerHTML='';
+});
+
+/* =========================
+   GPS CADDiE
+   ========================= */
+function caddieRecommendation(distanceM, profile){
+  let adj = 0;
+  if(profile.missTrend === 'short') adj = -10;
+  if(profile.missTrend === 'long') adj = +10;
+
+  const effective = distanceM - adj;
+
+  const table = [
+    {club:'Pitching Wedge', max:110},
+    {club:'Fer 9', max:125},
+    {club:'Fer 8', max:140},
+    {club:'Fer 7', max:155},
+    {club:'Fer 6', max:170},
+    {club:'Fer 5', max:185},
+    {club:'Hybride', max:205},
+    {club:'Bois 5', max:220},
+    {club:'Bois 3', max:240},
+    {club:'Driver', max:999}
+  ];
+  const pick = table.find(t=> effective <= t.max) || table[table.length-1];
+
+  let note = '';
+  if(profile.ballflight.includes('slice')) note = "Astuce : vise légèrement à gauche (slice).";
+  if(profile.ballflight.includes('hook')) note = "Astuce : vise légèrement à droite (hook).";
+  if(profile.missTrend === 'random') note = "Astuce : joue le club le plus sûr (évite forcer).";
+
+  return {club: pick.club, effective, note, adj};
+}
+
+document.getElementById('gpsStart').addEventListener('click', ()=>{
+  const status = document.getElementById('gpsStatus');
+  const out = document.getElementById('gpsOutput');
+
+  const profile = JSON.parse(localStorage.getItem('unik_last_profile') || 'null') || readProfile();
+
+  if(!navigator.geolocation){
+    status.innerText='GPS non supporté';
+    return;
+  }
+  status.innerText='Demande position...';
+
+  navigator.geolocation.getCurrentPosition(pos=>{
+    status.innerText='GPS actif ✅ (simulation trou)';
+    const lat = pos.coords.latitude.toFixed(4);
+    const lng = pos.coords.longitude.toFixed(4);
+
+    const dist = 145; // exemple
+    const rec = caddieRecommendation(dist, profile);
+
+    out.innerHTML = `
+      <div class="card">
+        <strong>Position:</strong> ${lat}, ${lng}<br>
+        <div class="small" style="margin-top:8px">
+          Trou 1 • Distance: ${dist} m<br>
+          Ajustement tendance: ${rec.adj === 0 ? '0m' : (rec.adj>0? '+'+rec.adj : rec.adj)+'m'}<br>
+          <strong>Caddie IA :</strong> conseille <strong>${escapeHtml(rec.club)}</strong>
+        </div>
+        <div class="small" style="margin-top:8px">${escapeHtml(rec.note || '')}</div>
+      </div>
+    `;
+  }, ()=>{
+    status.innerText='Position refusée — mode simulation';
+    const dist = 145;
+    const rec = caddieRecommendation(dist, profile);
+    out.innerHTML = `
+      <div class="card">
+        <strong>Mode simulation</strong>
+        <div class="small" style="margin-top:8px">
+          Trou 1 • Distance: ${dist} m<br>
+          <strong>Caddie IA :</strong> conseille <strong>${escapeHtml(rec.club)}</strong>
+        </div>
+        <div class="small" style="margin-top:8px">${escapeHtml(rec.note || '')}</div>
+      </div>
+    `;
+  });
+});
+
+/* =========================
+   SHOP page updates (auto after report)
+   ========================= */
+function refreshShopFromLast(){
+  const last = JSON.parse(localStorage.getItem('unik_last_profile')||'null');
+  if(!last) return;
+  const shopList = document.getElementById('shop-list');
+  const shop = computeShop(last);
+  shopList.innerHTML = shop.map(s=>`
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
+      <img src="${s.img}" style="width:92px;height:64px;border-radius:12px;object-fit:cover;border:1px solid rgba(8,42,68,0.12)">
+      <div>
+        <strong>${escapeHtml(s.title)}</strong>
+        <div class="small">${escapeHtml(s.price)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* =========================
+   DOWNLOADS
+   ========================= */
+document.getElementById('download-json').addEventListener('click', ()=>{
+  const profile = JSON.parse(localStorage.getItem('unik_last_profile')||'{}');
+  const plan = JSON.parse(localStorage.getItem('unik_last_plan')||'{}');
+  const blob = new Blob([JSON.stringify({profile,plan},null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'unika_golf_engine.json';
+  a.click();
+});
+document.getElementById('download-txt').addEventListener('click', ()=>{
+  const profile = JSON.parse(localStorage.getItem('unik_last_profile')||'{}');
+  const plan = JSON.parse(localStorage.getItem('unik_last_plan')||'{}');
+  let txt = `UNIKA GOLF ENGINE — RAPPORT\n\nPROFIL:\n${JSON.stringify(profile,null,2)}\n\nEXERCICES:\n`;
+  if(plan.exercises) plan.exercises.forEach((e,i)=> txt += `${i+1}. ${e.title} - ${e.why}\n`);
+  const blob = new Blob([txt],{type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'unika_golf_engine.txt';
+  a.click();
+});
+document.getElementById('btn-export-pdf').addEventListener('click', ()=>{
+  const profile = JSON.parse(localStorage.getItem('unik_last_profile')||'{}');
+  const plan = JSON.parse(localStorage.getItem('unik_last_plan')||'{}');
+  let content = `UNIKA GOLF ENGINE — RAPPORT\n\nProfil:\n${JSON.stringify(profile,null,2)}\n\nExercices:\n`;
+  if(plan.exercises) plan.exercises.forEach((e,i)=> content += `${i+1}. ${e.title} - ${e.why}\n`);
+  const w = window.open('','_blank','width=900,height=650');
+  w.document.write('<pre style="font-family:Arial;white-space:pre-wrap;padding:16px">'+escapeHtml(content)+'</pre>');
+  w.document.close();
+  w.print();
+});
+
+/* =========================
+   PREMIUM SIMULATION
+   ========================= */
+document.getElementById('subscribe').addEventListener('click', ()=>{
+  if(confirm('Activer Premium (simulation) ?')){
+    localStorage.setItem('unik_premium','1');
+    document.getElementById('premium-status').innerText='Abonné(e) ✅';
+    alert('Premium activé ✅ (génère un nouveau rapport pour voir + de contenu)');
+  }
+});
+if(isPremium()) document.getElementById('premium-status').innerText='Abonné(e) ✅';
+
+/* =========================
+   GOLF DATING (local)
+   ========================= */
+function refreshDating(){
+  const arr = JSON.parse(localStorage.getItem('unik_dating')||'[]');
+  const el = document.getElementById('dating-list');
+  if(!arr.length){
+    el.innerHTML = 'Aucun profil';
+    return;
+  }
+  el.innerHTML = arr.map(d=>`
+    <div class="card" style="margin-top:10px">
+      <strong>${escapeHtml(d.name)}</strong> • ${escapeHtml(d.loc)}<br>
+      <span class="pill">${escapeHtml(d.pref)}</span>
+      <span class="pill">Niveau: ${escapeHtml(d.lvl)}</span>
+    </div>
+  `).join('');
+}
+document.getElementById('create-dating').addEventListener('click', ()=>{
+  const name = (document.getElementById('dating_name').value || 'Anonyme').trim();
+  const loc = (document.getElementById('dating_loc').value || '—').trim();
+  const pref = document.getElementById('dating_pref').value || '—';
+  const lvl = document.getElementById('dating_lvl').value || '—';
+
+  const arr = JSON.parse(localStorage.getItem('unik_dating')||'[]');
+  arr.push({id:Date.now(), name, loc, pref, lvl});
+  localStorage.setItem('unik_dating', JSON.stringify(arr));
+  refreshDating();
+  alert('Profil Dating créé ✅');
+});
+document.getElementById('clear-dating').addEventListener('click', ()=>{
+  if(!confirm('Effacer tous les profils Dating ?')) return;
+  localStorage.removeItem('unik_dating');
+  refreshDating();
+});
+
+/* =========================
+   INIT
+   ========================= */
+window.addEventListener('load', ()=>{
+  setGripPreview();
+  refreshDating();
+
+  const last = JSON.parse(localStorage.getItem('unik_last_profile')||'null');
+  if(last){
+    if(last.firstName) document.getElementById('firstName').value = last.firstName;
+    if(last.lastName) document.getElementById('lastName').value = last.lastName;
+    if(last.age) document.getElementById('age').value = last.age;
+    if(last.height) document.getElementById('height').value = last.height;
+    if(last.weight) document.getElementById('weight').value = last.weight;
+    if(last.injuries) document.getElementById('injuries').value = last.injuries;
+
+    if(last.level) document.getElementById('level').value = last.level;
+    if(last.ballflight) document.getElementById('ballflight').value = last.ballflight;
+    if(last.contact) document.getElementById('contact').value = last.contact;
+    if(last.missTrend) document.getElementById('missTrend').value = last.missTrend;
+
+    if(last.swing_speed) document.getElementById('swing_speed').value = last.swing_speed;
+    if(last.gripType) document.getElementById('gripType').value = last.gripType;
+    if(last.shaft) document.getElementById('shaft').value = last.shaft;
+
+    setGripPreview();
+    refreshShopFromLast();
+  }
+});
+
+/* =========================
+   MODAL CLOSE on outside click
+   ========================= */
+document.getElementById('modal').addEventListener('click', (e)=>{
+  if(e.target.id === 'modal') document.getElementById('modal').style.display='none';
+});
+</script>
+
+</body>
+</html>
